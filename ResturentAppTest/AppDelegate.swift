@@ -13,11 +13,24 @@ import CoreData
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
-
+    var orderTabBarItem: UITabBarItem!
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        let temporaryDirectory = NSTemporaryDirectory()
+        let urlCash = URLCache(memoryCapacity: 25-000-000, diskCapacity: 50-000-000, diskPath: temporaryDirectory)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateOrderBadge), name: MenuController.orderUpdateNotofication, object: nil)
+        orderTabBarItem = (self.window?.rootViewController as? UITabBarController)?.viewControllers![1].tabBarItem
         return true
+    }
+    @objc func updateOrderBadge(){
+        orderTabBarItem.badgeValue = String(MenuController.shard.order.menuItems.count)
+        switch MenuController.shard.order.menuItems.count {
+        case 0:
+            orderTabBarItem.badgeValue = nil
+        case let count:
+            orderTabBarItem.badgeValue = String(count)
+        }
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
